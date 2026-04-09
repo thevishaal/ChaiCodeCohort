@@ -1,0 +1,101 @@
+title Clinic Appointment and Diagnostics Platform
+
+patients [icon: user, color: green] {
+  patient_id serial pk
+  f_name varchar not null
+  l_name varchar 
+  dob date
+  gender enum(male, female, other)
+  phone varchar not null
+  email varchar unique not null
+  address text
+
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+doctors [icon: doctor, color: orange] {
+  doctor_id serial pk
+  f_name varchar not null
+  l_name varchar 
+  gender enum(male, female, other)
+  license_number varchar not null
+  phone varchar not null
+  email varchar unique not null
+  speciality_id int fk
+
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Specialty [color: orange] {
+  speciality_id serial pk
+  name varchar not null // cardiology..
+  description text
+}
+
+appointment [icon: timer, color: blue] {
+  appointment_id serial pk 
+  date date
+  time time
+  status enum(scheduled, cancelled, completed, not show)
+  patient_id int fk
+  doctor_id int fk
+}
+
+consultation [icon: hospital, color: red] {
+  consultation_id serial pk
+  date_time datetime
+  symptoms varchar 
+  appointment_id int fk unique
+  patient_id int fk
+  doctor_id int fk
+} 
+
+tests [icon: test-tube, color: blue] {
+  test_id serial pk
+  name varchar not null // blood test, x-ray.....
+  cost int
+}
+
+prescribed_test [icon: presto, color: yellow] {
+  prescription_id serial pk
+  consultation_id int fk
+  test_id int fk
+  status enum(pending, sample collected, completed)
+}
+
+report [icon: report, color: green] {
+  report_id serial pk
+  prescription_id int fk
+  report_summary text
+  file_url varchar // pdf url
+  generated_date date 
+}
+
+payment [icon: payment, color: red] {
+  payment_id serial pk
+  total_amount int not null
+  payment_mode enum(cash, card, upi)
+  payment_status enum(pending, paid)
+  consultation_id int fk
+  patient_id int fk
+}
+
+patients.patient_id < appointment.patient_id
+patients.patient_id < consultation.patient_id
+patients.patient_id < payment.patient_id
+
+doctors.speciality_id > Specialty.speciality_id
+doctors.doctor_id < appointment.doctor_id
+doctors.doctor_id < consultation.doctor_id
+
+appointment.appointment_id - consultation.appointment_id
+
+consultation.consultation_id < prescribed_test.consultation_id 
+tests.test_id < prescribed_test.test_id
+prescribed_test.prescription_id - report.prescription_id
+
+consultation.consultation_id - payment.consultation_id
+
+
