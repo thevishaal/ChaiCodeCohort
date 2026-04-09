@@ -1,0 +1,71 @@
+title Comic-Con Parking System
+
+vehicles [icon: tractor, color: green] {
+  vehicle_id serial pk 
+  vehicle_number varchar unique not null
+  vehicle_category_id int fk
+}
+
+vehicle_category [icon: car, color: blue] {
+  vehicle_category_id serial pk
+  category_name varchar not null // Bus, Suv, Ev, Bike, Car ....
+}
+
+parking_zone [icon: parking, color: purple] {
+  zone_id serial pk 
+  zone_name varchar // A, B, Level 1...
+  level_number int not null
+}
+
+parking_spot [icon: planetscale, color: green] {
+  spot_id serial pk
+  zone_id int fk
+  spot_category_id int fk 
+  is_active boolean
+}
+
+parking_spot_category [icon: parking, color: orange] {
+  spot_category_id serial pk
+  category_name varchar // General, VIP, Exhibitor, Staff, Cosplayer, EV Charging...
+}
+
+parking_ticket[icon: ticket, color: red] {
+  ticket_id serial pk
+  ticket_number int unique
+  issue_time timestamp
+}
+
+parking_session [icon: safari, color: red] {
+  session_id serial pk
+  vehicle_id int fk
+  spot_id int fk 
+  ticket_id int fk 
+  entry_time timestamp
+  exit_time timestamp null check(status = active)
+  status varchar enum(active, completed)
+}
+
+payment [icon: rupee, color: orange] {
+  payment_id serial pk
+  session_id int fk
+  amount int
+  payment_time timestamp
+  payment_status varchar enum(paid, pending)
+  payment_mode varchar enum(upi, card, cash)
+}
+
+pricing_rule [icon: test-tube, color: green] {
+  pricing_id serial pk
+  vehicle_category_id int fk
+  rate_per_hour int not null
+  flat_rate int 
+}
+
+vehicles.vehicle_id < parking_session.vehicle_id
+parking_spot.spot_id < parking_session.spot_id
+parking_zone.zone_id < parking_spot.zone_id
+parking_spot_category.spot_category_id < parking_spot.spot_category_id
+vehicle_category.vehicle_category_id < vehicles.vehicle_category_id
+parking_ticket.ticket_id - parking_session.ticket_id
+parking_session.session_id - payment.session_id
+pricing_rule.vehicle_category_id - vehicle_category.vehicle_category_id
