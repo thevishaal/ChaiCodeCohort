@@ -1,0 +1,12 @@
+{
+  "name": "http-basics",
+  "version": "1.0.0",
+  "description": "this is just use node",
+  "license": "ISC",
+  "author": "thevishaal",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
